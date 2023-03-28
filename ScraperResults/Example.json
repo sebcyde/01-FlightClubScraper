@@ -1,0 +1,25 @@
+[
+  {"name":"Social Darts Banner Header Test",
+  "test":[
+    {"name":"Verifies H2 Text",
+    "test":{
+      "url":"https://flightclubdarts.com/",
+      "selector":"h2",
+      "assertion":"contain",
+      "value":"Social Darts"}
+    },
+    {"name":"Verifies H2 Styling",
+    "test":{
+      "url":"https://flightclubdarts.com/",
+      "selector":"h2",
+      "assertion":"have.css",
+      "property":"font-size",
+      "value":"42px"
+      }
+    },
+    {"name":"Verifies H2 Styling",
+    "test":{
+      "url":"https://flightclubdarts.com/",
+      "selector":"h2",
+      "assertion":"have.css","property":"font-weight","value":"700"}},{"name":"Verifies H2 Styling","test":{"url":"https://flightclubdarts.com/","selector":"h2","assertion":"have.css","property":"font-family","value":"BebasNeue-bold"}}]}]
+
