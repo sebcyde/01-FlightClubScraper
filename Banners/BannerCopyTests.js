@@ -23,6 +23,7 @@ const BannerCopyTests = async (page, URL, FileName) => {
 		if (Copy !== null) {
 			return {
 				name: `${Copy.textContent} Banner Copy Test`,
+				TestType: 'Copy',
 				test: [
 					{
 						name: 'Verifies p text content',
@@ -60,19 +61,7 @@ const BannerCopyTests = async (page, URL, FileName) => {
 
 	console.log('Generated all banner copy tests successfully');
 
-	// Write the test case to a file
-	require('fs').writeFileSync(
-		`${FileName}.json`,
-		JSON.stringify(BannerCopyTests),
-		{
-			flag: 'a',
-		}
-	);
-
-	// Log the file path for debugging purposes
-	console.log(`Test case written to ${FileName}`);
-
-	return BannerCopys;
+	return BannerCopyTests;
 };
 
 module.exports = { BannerCopyTests };

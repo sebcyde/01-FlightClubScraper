@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 
 const BannerButtonsTests = async (page, URL, FileName) => {
-	const BannerButtonss = await page.$$eval('button', (Buttons) =>
+	const BannerButtons = await page.$$eval('button', (Buttons) =>
 		Buttons.map((Button) => {
 			if (Button.innerText == '') return;
 
@@ -18,14 +18,15 @@ const BannerButtonsTests = async (page, URL, FileName) => {
 		})
 	);
 
-	const BannerTests = BannerButtonss.map((Button, index) => {
+	const BannerButtonTests = BannerButtons.map((Button, index) => {
 		console.log(
-			`Generating Banner Button Test (${index + 1}/${BannerButtonss.length})`
+			`Generating Banner Button Test (${index + 1}/${BannerButtons.length})`
 		);
 
 		if (Button !== null) {
 			return {
 				name: `${Button.textContent} Banner Button Test`,
+				TestType: 'Button',
 				test: [
 					{
 						name: 'Verifies button text content',
@@ -73,15 +74,7 @@ const BannerButtonsTests = async (page, URL, FileName) => {
 
 	console.log('Generated all banner Button tests successfully');
 
-	// Write the test case to a file
-	require('fs').writeFileSync(`${FileName}.json`, JSON.stringify(BannerTests), {
-		flag: 'a',
-	});
-
-	// Log the file path for debugging purposes
-	console.log(`Test case written to ${FileName}`);
-
-	return BannerButtonss;
+	return BannerButtonTests;
 };
 
 module.exports = { BannerButtonsTests };

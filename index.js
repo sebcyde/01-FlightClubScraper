@@ -2,56 +2,85 @@
 const puppeteer = require('puppeteer');
 const cypress = require('cypress');
 const axios = require('axios');
+const fs = require('fs');
 
 // Components
-const { BannerHeaderTests } = require('./Banners/BannerHeaderTests.js');
 const { BannerButtonsTests } = require('./Banners/BannerButtonTests.js');
+const { BannerHeaderTests } = require('./Banners/BannerHeaderTests.js');
 const { BannerCopyTests } = require('./Banners/BannerCopyTests.js');
-const { FilePathGenerator } = require('./Functions/FilePathGenerator.js');
 
-// Launch a headless browser instance with Puppeteer
 (async () => {
+	const URL = 'https://flightclubdarts.com/';
+	const FileName = `./cypress/fixtures/TestData`;
 	const browser = await puppeteer.launch();
 	const page = await browser.newPage();
-	const URL = 'https://flightclubdarts.com/';
 
-	const FileName = `./cypress/e2e/${
-		new Date().toLocaleDateString().replace(/\//g, '') +
-		new Date()
-			.toLocaleTimeString('en-GB', {
-				hour: 'numeric',
-			})
-			.replace(/:/g, '')
-	}`;
-
+	// Generate Tests and create TestData.json file
 	const ExtractData = async () => {
 		// Navigate to the website
 		await page.goto(URL);
 
 		// Generate Banner Tests
-		const BannerHeaders = await BannerHeaderTests(page, URL, FileName);
-		const BannerCopy = await BannerCopyTests(page, URL, FileName);
-		const BannerButtons = await BannerButtonsTests(page, URL, FileName);
+
+		const BannerExtraction = async () => {
+			const Banners = await Promise.all([
+				BannerHeaderTests(page, URL, FileName),
+				BannerCopyTests(page, URL, FileName),
+				BannerButtonsTests(page, URL, FileName),
+			]);
+
+			console.log('Test Example:', JSON.stringify(Banners.flat()[0].test));
+
+			// If Test Data already exists - delete it
+			if (fs.existsSync(`${FileName}.json`)) {
+				console.log(`Removing existing Test Data at: ${FileName}.json`);
+				fs.unlinkSync(`${FileName}.json`);
+				console.log('Removal successful');
+			}
+
+			// Write test cases to new file
+			try {
+				console.log(`Creating new test data file at: ${FileName}.json`);
+				fs.writeFileSync(
+					`${FileName}.json`,
+					JSON.stringify(Banners.flat()).replace('][', '],['),
+					{
+						flag: 'a',
+					}
+				);
+				console.log('Test data file creation successful');
+			} catch (error) {
+				console.log(`Failed to create new test data file`);
+				console.log('Error:', err);
+			}
+
+			// Log the file path for debugging purposes
+			console.log(`All Banner test cases written to ${FileName}`);
+		};
+
+		await BannerExtraction();
 
 		// Close the browser instance
 		await browser.close();
-
-		// Return a path to the file containing the test JSON
-		return FilePathGenerator();
 	};
 
-	const ExecuteTests = async (Path) => {
-		// cypress
-		// 	.run({
-		// 		browser: 'chrome',
-		// 		spec: './cypress/e2e/spec.cy.js',
-		// 	})
-		// 	.then((results) => {
-		// 		console.log(results);
-		// 	})
-		// 	.catch((err) => {
-		// 		console.error(err);
-		// 	});
+	// Execute the tests in TestData.json
+	const ExecuteTests = async () => {
+		await cypress
+			.run({
+				browser: 'chrome',
+				spec: './cypress/e2e/spec.cy.js',
+			})
+			.then((results) => {
+				if (results.status === 'failed') {
+					console.log('Test Execution Failed');
+					console.log('Reason:', results.message);
+				} else {
+					console.log('Test Execution Successful');
+					console.log(results);
+				}
+			});
+
 		//
 		//
 		//
@@ -65,8 +94,8 @@ const { FilePathGenerator } = require('./Functions/FilePathGenerator.js');
 		//
 	};
 
-	const Path = await ExtractData();
-	await ExecuteTests(Path);
+	// await ExtractData();
+	await ExecuteTests();
 
 	// // Extract the page header text using a CSS selector
 	// const headerText = await page.$eval('h1', (el) => el.textContent.trim());

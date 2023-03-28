@@ -16,7 +16,7 @@ const BannerHeaderTests = async (page, URL, FileName) => {
 		})
 	);
 
-	const BannerTests = BannerHeaders.map((Header, index) => {
+	const BannerHeaderTests = BannerHeaders.map((Header, index) => {
 		console.log(
 			`Generating Banner Header Test (${index + 1}/${BannerHeaders.length})`
 		);
@@ -24,6 +24,7 @@ const BannerHeaderTests = async (page, URL, FileName) => {
 		if (Header !== null) {
 			return {
 				name: `${Header.textContent} Banner Header Test`,
+				TestType: 'Header',
 				test: [
 					{
 						name: 'Verifies H2 Text',
@@ -71,15 +72,7 @@ const BannerHeaderTests = async (page, URL, FileName) => {
 
 	console.log('Generated all banner header tests successfully');
 
-	// Write the test case to a file
-	require('fs').writeFileSync(`${FileName}.json`, JSON.stringify(BannerTests), {
-		flag: 'a',
-	});
-
-	// Log the file path for debugging purposes
-	console.log(`Test case written to ${FileName}`);
-
-	return BannerHeaders;
+	return BannerHeaderTests;
 };
 
 module.exports = { BannerHeaderTests };
