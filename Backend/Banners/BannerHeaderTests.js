@@ -4,24 +4,6 @@ const fs = require('fs');
 const BannerHeaderTests = async (page, URL, Colours) => {
 	const FileName = `./cypress/fixtures/BannerHeaders/BannerHeaderData`;
 
-	await page.setViewport({ width: 1000, height: 500 });
-	// Previous Version
-	// const BannerHeaders = await page.$$eval('h2', (Headers) =>
-	// 	Headers.filter((el) => el.innerText !== '').map((Header) => {
-	// 		const style = window.getComputedStyle(Header);
-
-	// 		return {
-	// 			classes: Header.getAttribute('class'),
-	// 			fontSize: style.getPropertyValue('font-size'),
-	// 			fontWeight: style.getPropertyValue('font-weight'),
-	// 			fontFamily: style.getPropertyValue('font-family'),
-	// 			color: style.getPropertyValue('color'),
-	// 			textContent: Header.innerText,
-	// 		};
-	// 	})
-	// );
-
-	// New Version
 	const h2Elements = await page.$$eval('h2', (elements) => {
 		return (
 			elements

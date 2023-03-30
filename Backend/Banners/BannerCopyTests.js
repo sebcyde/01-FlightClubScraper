@@ -1,67 +1,90 @@
-const puppeteer = require("puppeteer");
+const puppeteer = require('puppeteer');
+const fs = require('fs');
 
-const BannerCopyTests = async (page, URL) => {
-  const BannerCopys = await page.$$eval("p", (Copys) =>
-    Copys.map((Copy) => {
-      if (Copy.innerText == "") return;
+const BannerCopyTests = async (page, URL, Colours) => {
+	const FileName = `./cypress/fixtures/BannerCopy/BannerCopyData`;
 
-      const style = window.getComputedStyle(Copy);
-      return {
-        fontSize: style.getPropertyValue("font-size"),
-        fontFamily: style.getPropertyValue("font-family"),
-        color: style.getPropertyValue("color"),
-        textContent: Copy.innerText,
-      };
-    })
-  );
+	const PElements = await page.$$eval('p', (elements) => {
+		return (
+			elements
+				.filter((el) => el.textContent.trim().length > 0)
+				// filter out elements with empty text content
+				.map((el) => {
+					const styles = getComputedStyle(el);
+					return {
+						text: el.textContent.trim().replace(/&nbsp;/g, ' '),
+						styles: {
+							fontSize: styles.fontSize,
+							fontWeight: styles.fontWeight,
+							fontFamily: styles.fontFamily,
+							color: styles.color,
+						},
+					};
+				})
+		);
+	});
 
-  const BannerCopyTests = BannerCopys.map((Copy, index) => {
-    console.log(
-      `Generating Banner Copy Test (${index + 1}/${BannerCopys.length})`
-    );
+	const BannerCopyTests = PElements.map((Copy, index) => {
+		console.log(
+			`Generating Banner Copy Test (${index + 1}/${PElements.length})`
+		);
 
-    if (Copy !== null) {
-      return {
-        name: `${Copy.textContent} Banner Copy Test`,
-        TestType: "Copy",
-        test: [
-          {
-            name: "Verifies p text content",
-            test: {
-              url: `${URL}`,
-              selector: "p",
-              assertion: "contain",
-              value: `${Copy.textContent}`,
-            },
-          },
-          {
-            name: "Verifies p font sizing",
-            test: {
-              url: `${URL}`,
-              selector: "p",
-              assertion: "have.css",
-              property: "font-size",
-              value: "18px",
-            },
-          },
-          {
-            name: "Verifies p font family",
-            test: {
-              url: `${URL}`,
-              selector: "p",
-              assertion: "have.css",
-              property: "font-family",
-              value: "BrandonGrotesqueWeb-Reg",
-            },
-          },
-        ],
-      };
-    }
-  });
+		return {
+			TestType: 'Copy',
+			Text: Copy.text,
+			Name: `Banner Copy Test`,
+			test: [
+				{
+					name: 'Verifies PTag font sizing',
+					test: {
+						check: 'font-size',
+						current: Copy.styles.fontSize,
+						assertion: 'equal',
+						value: '18px',
+					},
+				},
+				{
+					name: 'Verifies PTag font family',
+					test: {
+						check: 'font-family',
+						current: Copy.styles.fontFamily,
+						assertion: 'equal',
+						value: 'BrandonGrotesqueWeb-Reg',
+					},
+				},
+			],
+		};
+	});
 
-  console.log("Generated all banner copy tests successfully");
+	// BannerCopyTests.forEach((element) => {
+	// 	console.log('Example Copy:', element.Text);
+	// 	console.log('break');
+	// });
 
-  return BannerCopyTests;
+	// If Test Data already exists - delete it
+	if (fs.existsSync(`${FileName}.json`)) {
+		console.log(`Removing existing Test Data File at: ${FileName}.json`);
+		fs.unlinkSync(`${FileName}.json`);
+		console.log('Removal successful');
+	}
+
+	// Write test cases to new file
+	try {
+		console.log(`Creating new test data file at: ${FileName}.json`);
+		require('fs').writeFileSync(
+			`${FileName}.json`,
+			JSON.stringify(BannerCopyTests),
+			{
+				flag: 'a',
+			}
+		);
+		console.log('Test data file creation successful');
+	} catch (error) {
+		console.log(`Failed to create new test data file`);
+		console.log('Error:', error);
+	}
+
+	return BannerCopyTests;
 };
 
 module.exports = { BannerCopyTests };

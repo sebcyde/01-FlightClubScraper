@@ -56,10 +56,8 @@ const { BannerCopyTests } = require('./Banners/BannerCopyTests.js');
 
 		const BannerExtraction = async () => {
 			const HeaderTests = await BannerHeaderTests(page, URL, Colours);
-			// const CopyTests = await BannerCopyTests(page, URL, Colours);
+			const CopyTests = await BannerCopyTests(page, URL, Colours);
 			// const ButtonTests = await BannerButtonsTests(page, URL, Colours);
-
-			console.log('Header Tests:', HeaderTests);
 		};
 
 		await BannerExtraction();
