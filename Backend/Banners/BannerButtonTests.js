@@ -1,98 +1,98 @@
-const puppeteer = require("puppeteer");
+const puppeteer = require('puppeteer');
+const fs = require('fs');
 
-const BannerButtonsTests = async (page, URL, Colours) => {
-  const BannerButtons = await page.$$eval("a", (Buttons) =>
-    Buttons.map((Button) => {
-      if (Button.innerText == "") return;
+const BannerButtonTests = async (page, URL, Colours) => {
+	const FileName = `./cypress/fixtures/BannerButtons/BannerButtonData`;
 
-      const style = window.getComputedStyle(Button);
-      return {
-        classes: Button.getAttribute("class"),
-        fontSize: style.getPropertyValue("font-size"),
-        fontWeight: style.getPropertyValue("font-weight"),
-        fontFamily: style.getPropertyValue("font-family"),
-        backgroundcolor: style.getPropertyValue("background-color"),
-        color: style.getPropertyValue("color"),
-        textContent: Button.innerText,
-        isClickable: !Button.disabled,
-        href: Button.href,
-      };
-    })
-  );
+	const buttonElements = await page.$$eval('button', (elements) => {
+		return (
+			elements
+				.filter((el) => el.textContent.trim().length > 0)
+				// filter out elements with empty text content
+				.map((el) => {
+					const styles = getComputedStyle(el);
+					return {
+						text: el.textContent.trim(),
+						styles: {
+							fontSize: styles.fontSize,
+							fontWeight: styles.fontWeight,
+							fontFamily: styles.fontFamily,
+							color: styles.color,
+						},
+					};
+				})
+		);
+	});
 
-  const BannerButtonTests = BannerButtons.filter(
-    (el) => el !== null || undefined
-  ).map((Button, index) => {
-    console.log(
-      `Generating Banner Button Test (${index + 1}/${BannerButtons.length})`
-    );
+	const BannerButtonTests = buttonElements.map((Header, index) => {
+		console.log(
+			`Generating Banner Header Test (${index + 1}/${buttonElements.length})`
+		);
 
-    return {
-      name: `${Button.textContent.replace(/\n/g, "")} Banner Button Test`,
-      classes: Button.classes,
-      TestType: "Button",
-      test: [
-        {
-          name: "Verifies button text content",
-          test: {
-            selector: "button",
-            assertion: "contain",
-            value: `${Button.textContent.replace(/\n/g, "")}`,
-          },
-        },
-        {
-          name: "Verifies button font sizing",
-          test: {
-            selector: "button",
-            assertion: "have.css",
-            property: "font-size",
-            value: Button.fontSize,
-            expected: "14px",
-          },
-        },
-        {
-          name: "Verifies button font family",
-          test: {
-            selector: "button",
-            assertion: "have.css",
-            property: "font-family",
-            value: Button.fontFamily,
-            expected: "BrandonGrotesqueWeb-bold",
-          },
-        },
-        {
-          name: "Verifies button background color",
-          test: {
-            selector: "button",
-            assertion: "have.css",
-            property: "background-color",
-            value: Button.backgroundcolor,
-            expected: Colours,
-          },
-        },
-        {
-          name: "Verifies button link ",
-          test: {
-            selector: "button",
-            link: Button.href,
-          },
-        },
-      ],
-    };
-  });
+		return {
+			TestType: 'Header',
+			Text: Header.text,
+			Name: `${Header.text} Banner Header Test`,
+			test: [
+				{
+					name: 'Verifies button font sizing',
+					test: {
+						check: 'font-size',
+						current: Header.styles.fontSize,
+						assertion: 'equal',
+						value: '40px',
+					},
+				},
+				{
+					name: 'Verifies button font weighting',
+					test: {
+						check: 'font-weight',
+						current: Header.styles.fontWeight,
+						assertion: 'equal',
+						value: '700',
+					},
+				},
+				{
+					name: 'Verifies button font family',
+					test: {
+						check: 'font-family',
+						current: Header.styles.fontFamily,
+						assertion: 'equal',
+						value: 'BebasNeue-bold',
+					},
+				},
+			],
+		};
+	});
 
-  BannerButtonTests.forEach((element, index) => {
-    if (index == 0 || (index == 1 && element.test)) {
-      console.log("Example Button:", element);
-      element.test.forEach((test) => console.log(test));
-    }
-  });
+	// BannerButtonTests.forEach((element) => {
+	// 	console.log('Example Header:', element);
+	// });
 
-  console.log(
-    `Generated ${BannerButtons.length} banner Button tests successfully`
-  );
+	// If Test Data already exists - delete it
+	if (fs.existsSync(`${FileName}.json`)) {
+		console.log(`Removing existing Test Data File at: ${FileName}.json`);
+		fs.unlinkSync(`${FileName}.json`);
+		console.log('Removal successful');
+	}
 
-  return BannerButtonTests;
+	// Write test cases to new file
+	try {
+		console.log(`Creating new test data file at: ${FileName}.json`);
+		require('fs').writeFileSync(
+			`${FileName}.json`,
+			JSON.stringify(BannerButtonTests),
+			{
+				flag: 'a',
+			}
+		);
+		console.log('Test data file creation successful');
+	} catch (error) {
+		console.log(`Failed to create new test data file`);
+		console.log('Error:', error);
+	}
+
+	return BannerButtonTests;
 };
 
-module.exports = { BannerButtonsTests };
+module.exports = { BannerButtonTests };

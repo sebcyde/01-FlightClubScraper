@@ -35,6 +35,7 @@ const Colours = [
 const { BannerButtonsTests } = require('./Banners/BannerButtonTests.js');
 const { BannerHeaderTests } = require('./Banners/BannerHeaderTests.js');
 const { BannerCopyTests } = require('./Banners/BannerCopyTests.js');
+const { BannerImageTests } = require('./Banners/BannerImageTests.js');
 
 (async () => {
 	const URL = 'https://flightclubdarts.com/';
@@ -57,6 +58,7 @@ const { BannerCopyTests } = require('./Banners/BannerCopyTests.js');
 		const BannerExtraction = async () => {
 			const HeaderTests = await BannerHeaderTests(page, URL, Colours);
 			const CopyTests = await BannerCopyTests(page, URL, Colours);
+			const ImageTests = await BannerImageTests(page, URL, Colours);
 			// const ButtonTests = await BannerButtonsTests(page, URL, Colours);
 		};
 
