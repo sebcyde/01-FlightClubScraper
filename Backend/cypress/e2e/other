@@ -1,0 +1,114 @@
+cy.fixture("TestData").then((TestData) => {
+  let HeaderIndex = 0;
+  let ButtonIndex = 1;
+  // Social Darts Homepage Banner
+  //     cy.get("section")
+  //       .find('[id="fc_tab-bookings-darts"]')
+  //       .eq(-1)
+  //       .find("h2")
+  //       .should("have.css", "color", "rgb(255, 255, 255)")
+  //       .should("have.css", "font-family", "BebasNeue-bold");
+
+  //     cy.get("section")
+  //       .find('[id="fc_tab-bookings-darts"]')
+  //       .eq(-1)
+  //       .find("p")
+  //       .should("have.css", "color", "rgb(255, 255, 255)")
+  //       .should("have.css", "font-size", "18px")
+  //       .should("have.css", "font-family", "BrandonGrotesqueWeb-Reg");
+
+  //     cy.get("section")
+  //       .find('[id="fc_tab-bookings-darts"]')
+  //       .eq(-1)
+  //       .find("input[class='fc_datepicker']")
+  //       .should("have.css", "color", "rgb(255, 255, 255)")
+  //       .should("have.css", "font-size", "14px")
+  //       .should("have.css", "font-family", "BrandonGrotesqueWeb-Reg")
+  //       .should("be.visible")
+  //       .scrollIntoView()
+  //       .click();
+
+  //     cy.get('[class="pika-lendar"]')
+  //       .should("be.visible")
+  //       .find('[class="pika-row"]')
+  //       .eq(4)
+  //       .find('td[class="is-today"]')
+  //       .next()
+  //       .next()
+  //       .find("button")
+  //       .click();
+
+  //     cy.get("section")
+  //       .find('[id="fc_tab-bookings-darts"]')
+  //       .eq(-1)
+  //       .find("input[name='preferedvenue']")
+  //       .find("select")
+  //       .select(1);
+
+  //     cy.get("section")
+  //       .find('[id="fc_tab-bookings-darts"]')
+  //       .eq(-1)
+  //       .find("input[name='preferedtime']")
+  //       .find("select")
+  //       .select(7);
+
+  //     cy.get("section")
+  //       .find('[id="fc_tab-bookings-darts"]')
+  //       .eq(-1)
+  //       .find("button")
+  //       .should("have.css", "color", "rgb(255, 255, 255)")
+  //       .should("have.css", "font-size", "18px")
+  //       .should("have.css", "font-family", "BrandonGrotesqueWeb-Reg")
+  //       .should("be.visible")
+  //       .click();
+
+  //     //https://flightclubdarts.com/book
+  //   });
+  // });
+
+  // TestData.forEach((TestCase) => {
+  //   if (TestCase !== null) {
+  //     // Add element type conditional in here
+  //     if (TestCase.TestType == "Header") {
+  //       describe(TestCase.name, () => {
+  //         // Text Content Verification
+  //         // cy.log(TestCase.test[0].name);
+  //         // cy.log("Assertion:", TestCase.test[0].test.assertion);
+  //         // cy.log("Value:", TestCase.test[0].test.value);
+
+  //         cy.get(`h2`)
+  //           .should("have.css", "font-size", "40px")
+  //           .should("have.css", "font-family", "BebasNeue-bold");
+
+  //         cy.get("p")
+  //           .should("have.css", "font-size", "18px")
+  //           .should("have.css", "font-family", "BrandonGrotesqueWeb-Reg");
+  //       });
+  //       HeaderIndex++;
+  //     }
+  //     // if (TestCase.TestType == "Button") {
+  //     //   cy.log(cy.get("a").eq(ButtonIndex).invoke("attr", "class")).then(
+  //     //     (classList) => classList.split(" ")
+  //     //   );
+  //     //   // if (
+  //     //   //   !cy
+  //     //   //     .get("a")
+  //     //   //     .eq(ButtonIndex)
+  //     //   //     .invoke("attr", "class")
+  //     //   //     .contains("fc_hide-on--desktop")
+  //     //   // ) {
+  //     //   //   describe(TestCase.name, () => {
+  //     //   //     cy.get("a")
+  //     //   //       .eq(ButtonIndex)
+  //     //   //       .should(
+  //     //   //         TestCase.test[0].test.assertion,
+  //     //   //         TestCase.test[0].test.value
+  //     //   //       );
+  //     //   //   });
+  //     //   // }
+  //     //   ButtonIndex++;
+  //     // }
+  //     cy.log("Break");
+  //   }
+  // });
+//});
