@@ -1,94 +1,116 @@
-const puppeteer = require("puppeteer");
+const puppeteer = require('puppeteer');
+const fs = require('fs');
 
 const BannerHeaderTests = async (page, URL, Colours) => {
-  await page.setViewport({ width: 1000, height: 500 });
-  const BannerHeaders = await page.$$eval("h2", (Headers) =>
-    Headers.filter((el) => el.innerText !== "").map((Header) => {
-      const style = window.getComputedStyle(Header);
+	const FileName = `./cypress/fixtures/BannerHeaders/BannerHeaderData`;
 
-      return {
-        classes: Header.getAttribute("class"),
-        fontSize: style.getPropertyValue("font-size"),
-        fontWeight: style.getPropertyValue("font-weight"),
-        fontFamily: style.getPropertyValue("font-family"),
-        color: style.getPropertyValue("color"),
-        textContent: Header.innerText,
-      };
-    })
-  );
+	await page.setViewport({ width: 1000, height: 500 });
+	// Previous Version
+	// const BannerHeaders = await page.$$eval('h2', (Headers) =>
+	// 	Headers.filter((el) => el.innerText !== '').map((Header) => {
+	// 		const style = window.getComputedStyle(Header);
 
-  const BannerHeaderTests = BannerHeaders.filter(
-    (el) => el !== null || undefined
-  ).map((Header, index) => {
-    console.log(
-      `Generating Banner Header Test (${index + 1}/${BannerHeaders.length})`
-    );
+	// 		return {
+	// 			classes: Header.getAttribute('class'),
+	// 			fontSize: style.getPropertyValue('font-size'),
+	// 			fontWeight: style.getPropertyValue('font-weight'),
+	// 			fontFamily: style.getPropertyValue('font-family'),
+	// 			color: style.getPropertyValue('color'),
+	// 			textContent: Header.innerText,
+	// 		};
+	// 	})
+	// );
 
-    return {
-      hidden: Header.textContent == null || "" || undefined ? true : false,
-      name: `${Header.textContent} Banner Header Test`,
-      classes: Header.classes,
-      TestType: "Header",
-      test: [
-        {
-          name: "Verifies H2 Text",
-          test: {
-            url: `${URL}`,
-            selector: "h2",
-            assertion: "contain",
-            value: `${Header.textContent}`,
-          },
-        },
-        {
-          name: "Verifies H2 font sizing",
-          test: {
-            url: `${URL}`,
-            selector: "h2",
-            assertion: "have.css",
-            property: "font-size",
-            value: "42px",
-          },
-        },
-        {
-          name: "Verifies H2 font weighting",
-          test: {
-            url: `${URL}`,
-            selector: "h2",
-            assertion: "have.css",
-            property: "font-weight",
-            value: "700",
-          },
-        },
-        {
-          name: "Verifies H2 font family",
-          test: {
-            url: `${URL}`,
-            selector: "h2",
-            assertion: "have.css",
-            property: "font-family",
-            value: "BebasNeue-bold",
-          },
-        },
-        {
-          name: "Verifies H2 color",
-          test: {
-            url: `${URL}`,
-            selector: "h2",
-            assertion: "have.css",
-            property: "color",
-            value: Header.color,
-            options: Colours,
-          },
-        },
-      ],
-    };
-  });
+	// New Version
+	const h2Elements = await page.$$eval('h2', (elements) => {
+		return (
+			elements
+				.filter((el) => el.textContent.trim().length > 0)
+				// filter out elements with empty text content
+				.map((el) => {
+					const styles = getComputedStyle(el);
+					return {
+						text: el.textContent.trim(),
+						styles: {
+							fontSize: styles.fontSize,
+							fontWeight: styles.fontWeight,
+							fontFamily: styles.fontFamily,
+							color: styles.color,
+						},
+					};
+				})
+		);
+	});
 
-  // BannerHeaderTests.forEach((element) => {
-  //   console.log("Example Header:", element);
-  // });
+	const BannerHeaderTests = h2Elements.map((Header, index) => {
+		console.log(
+			`Generating Banner Header Test (${index + 1}/${h2Elements.length})`
+		);
 
-  return BannerHeaderTests;
+		return {
+			TestType: 'Header',
+			Text: Header.text,
+			Name: `${Header.text} Banner Header Test`,
+			test: [
+				{
+					name: 'Verifies H2 font sizing',
+					test: {
+						check: 'font-size',
+						current: Header.styles.fontSize,
+						assertion: 'equal',
+						value: '40px',
+					},
+				},
+				{
+					name: 'Verifies H2 font weighting',
+					test: {
+						check: 'font-weight',
+						current: Header.styles.fontWeight,
+						assertion: 'equal',
+						value: '700',
+					},
+				},
+				{
+					name: 'Verifies H2 font family',
+					test: {
+						check: 'font-family',
+						current: Header.styles.fontFamily,
+						assertion: 'equal',
+						value: 'BebasNeue-bold',
+					},
+				},
+			],
+		};
+	});
+
+	// BannerHeaderTests.forEach((element) => {
+	// 	console.log('Example Header:', element);
+	// });
+
+	// If Test Data already exists - delete it
+	if (fs.existsSync(`${FileName}.json`)) {
+		console.log(`Removing existing Test Data File at: ${FileName}.json`);
+		fs.unlinkSync(`${FileName}.json`);
+		console.log('Removal successful');
+	}
+
+	// Write test cases to new file
+	try {
+		console.log(`Creating new test data file at: ${FileName}.json`);
+		require('fs').writeFileSync(
+			`${FileName}.json`,
+			JSON.stringify(BannerHeaderTests),
+			{
+				flag: 'a',
+			}
+		);
+		console.log('Test data file creation successful');
+	} catch (error) {
+		console.log(`Failed to create new test data file`);
+		console.log('Error:', error);
+	}
+
+	return BannerHeaderTests;
 };
 
 module.exports = { BannerHeaderTests };
